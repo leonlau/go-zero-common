@@ -5,10 +5,10 @@ import (
 	"sync"
 )
 
-const (
-	defaultError int    = 1000
-	defaultOK    int    = 200
-	defaultOKMsg string = "OK"
+var (
+	defaultErrorCode int    = 1000
+	defaultOKCode    int    = 200
+	defaultOKMsg     string = "OK"
 )
 
 var mutex *sync.RWMutex
@@ -29,6 +29,15 @@ func init() {
 	}
 }
 
+func SetDefaultErrorCode(code int) {
+	defaultErrorCode = code
+}
+
+func SetOKResq(code int, msg string) {
+	defaultOKCode = code
+	defaultOKMsg = msg
+}
+
 func getErrorMsg(code int) string {
 	mutex.RLock()
 	defer mutex.RUnlock()
@@ -36,7 +45,7 @@ func getErrorMsg(code int) string {
 		return msg
 	}
 
-	return errorSet[defaultError]
+	return errorSet[defaultErrorCode]
 }
 
 func AppendErrorMsg(code int, msg string) {

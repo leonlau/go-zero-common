@@ -20,9 +20,12 @@ func (e *CodeError) Error() string {
 }
 
 func NewOk(data any) *BaseResp {
+	if data == nil {
+		data = struct{}{}
+	}
 	return &BaseResp{
 		CodeError: CodeError{
-			Code: defaultOK,
+			Code: defaultOKCode,
 			Msg:  defaultOKMsg,
 		},
 		Data: data,
@@ -35,8 +38,8 @@ var ErrorHandler = func(ctx context.Context, err error) (int, any) {
 		return 200, e
 	}
 	return 200, CodeError{
-		Code: defaultError,
-		Msg:  getErrorMsg(defaultError),
+		Code: defaultErrorCode,
+		Msg:  getErrorMsg(defaultErrorCode),
 		// Desc: err.Error(),
 	}
 }
