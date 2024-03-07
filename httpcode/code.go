@@ -12,17 +12,21 @@ const (
 )
 
 var mutex *sync.RWMutex
+var errorSet map[int]string
 
-var errorSet = map[int]string{
-	1000: "Internal Error",
-	1001: "Unauthorized",
-	1002: "Forbidden",
-	1003: "Not Found",
-	1004: "Invalid Argument",
-	1005: "Already Exists",
-	1006: "Aborted",
-	1007: "Unavailable",
-	1008: "AuthenticationFailed",
+func init() {
+	mutex = &sync.RWMutex{}
+	errorSet = map[int]string{
+		1000: "Internal Error",
+		1001: "Unauthorized",
+		1002: "Forbidden",
+		1003: "Not Found",
+		1004: "Invalid Argument",
+		1005: "Already Exists",
+		1006: "Aborted",
+		1007: "Unavailable",
+		1008: "AuthenticationFailed",
+	}
 }
 
 func getErrorMsg(code int) string {
