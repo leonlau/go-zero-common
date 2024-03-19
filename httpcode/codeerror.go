@@ -3,43 +3,65 @@ package httpcode
 import (
 	"context"
 	"fmt"
+	"reflect"
 )
 
 type BaseResp struct {
-	CodeError `json:",inline"`
-	Data      any `json:"data,omitempty"`
-}
-type CodeError struct {
 	Code int    `json:"code"`
-	Msg  string `json:"msg"`
+	Msg  string `json:"message"`
+	Desc string `json:"desc,omitempty"`
+	Data any    `json:"data,omitempty"`
+}
+
+type ErrorResp struct {
+	Code int    `json:"code"`
+	Msg  string `json:"message"`
 	Desc string `json:"desc,omitempty"`
 }
 
-func (e *CodeError) Error() string {
+func (e *BaseResp) Error() string {
 	return fmt.Sprintf("%s:%s", e.Msg, e.Desc)
 }
 
-func NewOk(data any) *BaseResp {
-	if data == nil {
-		data = struct{}{}
+var ErrorHandler = func(ctx context.Context, err error) (int, any) {
+
+	e, ok := err.(*BaseResp)
+	if ok {
+		return 200, &ErrorResp{
+			Code: e.Code,
+			Msg:  e.Msg,
+			// Desc: e.Desc,
+		}
 	}
+	return 200, &ErrorResp{
+		Code: defaultErrorCode,
+		Msg:  getErrorMsg(defaultErrorCode),
+		// Desc: err.Error(),
+	}
+}
+
+var OkHandler = func(ctx context.Context, data any) any {
+
+	if isEmpty(data) {
+		data = nil //make([]string, 0)
+	}
+
 	return &BaseResp{
-		CodeError: CodeError{
-			Code: defaultOKCode,
-			Msg:  defaultOKMsg,
-		},
+		Code: defaultOKCode,
+		Msg:  defaultOKMsg,
 		Data: data,
 	}
 }
 
-var ErrorHandler = func(ctx context.Context, err error) (int, any) {
-	e, ok := err.(*CodeError)
-	if ok {
-		return 200, e
+func isEmpty(obj any) bool {
+	if obj == nil {
+		return true
 	}
-	return 200, CodeError{
-		Code: defaultErrorCode,
-		Msg:  getErrorMsg(defaultErrorCode),
-		// Desc: err.Error(),
+	kind := reflect.ValueOf(obj).Kind()
+	switch kind {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(obj).IsNil()
+	default:
+		return false
 	}
 }

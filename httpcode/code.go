@@ -60,7 +60,7 @@ func GetCodeError(code int, descs ...string) error {
 		desc = strings.Join(descs, ",")
 	}
 
-	return &CodeError{
+	return &BaseResp{
 		Code: code,
 		Msg:  getErrorMsg(code),
 		Desc: desc,
