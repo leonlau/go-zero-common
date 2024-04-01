@@ -1,4 +1,4 @@
-package httpcode
+package errno
 
 import (
 	"context"
@@ -33,11 +33,7 @@ var ErrorHandler = func(ctx context.Context, err error) (int, any) {
 			// Desc: e.Desc,
 		}
 	}
-	return 200, &ErrorResp{
-		Code: defaultErrorCode,
-		Msg:  getErrorMsg(defaultErrorCode),
-		// Desc: err.Error(),
-	}
+	return 200, defaultError
 }
 
 var OkHandler = func(ctx context.Context, data any) any {
@@ -46,11 +42,7 @@ var OkHandler = func(ctx context.Context, data any) any {
 		data = nil //make([]string, 0)
 	}
 
-	return &BaseResp{
-		Code: defaultOKCode,
-		Msg:  defaultOKMsg,
-		Data: data,
-	}
+	return OK
 }
 
 func isEmpty(obj any) bool {
