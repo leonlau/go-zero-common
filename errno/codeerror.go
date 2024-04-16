@@ -42,7 +42,12 @@ var OkHandler = func(ctx context.Context, data any) any {
 		data = nil //make([]string, 0)
 	}
 
-	return OK
+	return &BaseResp{
+		Code: OK.(*BaseResp).Code,
+		Msg:  OK.(*BaseResp).Msg,
+		Desc: OK.(*BaseResp).Desc,
+		Data: data,
+	}
 }
 
 func isEmpty(obj any) bool {
